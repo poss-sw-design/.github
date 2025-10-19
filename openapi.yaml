@@ -1,0 +1,658 @@
+openapi: 3.0.3
+info:
+  title: Multi-business POS API
+  version: 1.0.0
+servers:
+  - url: /api/v1
+paths:
+  /businesses:
+    get:
+      summary: List all businesses
+      responses:
+        '200': { description: OK }
+        '500':
+          description: Server Error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Create a business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/BusinessCreate' }
+      responses:
+        '201': { description: Created }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get business details
+      responses:
+        '200': { description: OK }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Update business information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BusinessUpdate'
+      responses:
+        '200': { description: Updated }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/users:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: List users (employees) under business
+      responses:
+        '200': { description: OK }
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Create user(employee) in business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreate' }
+      responses:
+        '201': { description: Created }
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/users/{userId}:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: userId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get user details
+      responses:
+        '200': { description: OK }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Update user(employee) information
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserUpdate'
+      responses:
+        '200': { description: Updated }
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/menus:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: List menu items
+      parameters:
+        - in: query
+          name: isAvailable
+          schema: { type: boolean }
+      responses:
+        '200': { description: OK }
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Create menu item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MenuCreate' }
+      responses:
+        '201': { description: Created }
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/menus/{menuId}:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: menuId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get menu detail
+      responses:
+        '200': { description: OK }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Update menu item
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/MenuUpdate' }
+      responses:
+        '200': { description: Updated }
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/orders:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: List orders
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [OPEN, PAID, REFUNDED]
+      responses:
+        '200': { description: OK }
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Create order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrderCreate' }
+      responses:
+        '201': { description: Created }
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/orders/{orderId}:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get order detail
+      responses:
+        '200': { description: OK }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Update order (modify items/quantity/status)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/OrderUpdate' }
+      responses:
+        '200': { description: Updated }
+        '400':
+          description: Invalid update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/orders/{orderId}/pay:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Register payment for order
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/PaymentCreate' }
+      responses:
+        '200': { description: Paid }
+        '400':
+          description: Payment Error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/orders/{orderId}/split-payments:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Add split payment to order
+      description: Add individual payment entry to a split-order; each order can have multiple payments.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [amount, method]
+              properties:
+                amount: { type: number }
+                method: { type: string, enum: [CARD, CASH, GIFT_CARD] }
+      responses:
+        '200': { description: Payment recorded }
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/orders/{orderId}/refund:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Refund order
+      responses:
+        '200': { description: Refunded }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/orders/{orderId}/receipt:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: orderId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get receipt for order
+      description: Provides detailed receipt including all items, taxes, tip, discounts and payment info.
+      responses:
+        '200': { description: Receipt details }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/reservations:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: List reservations
+      parameters:
+        - in: query
+          name: status
+          schema:
+            type: string
+            enum: [BOOKED, COMPLETED, CANCELLED]
+      responses:
+        '200': { description: OK }
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Create reservation
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReservationCreate' }
+      responses:
+        '201': { description: Created }
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/reservations/{reservationId}:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: reservationId
+        in: path
+        required: true
+        schema:
+          type: string
+    get:
+      summary: Get reservation detail
+      responses:
+        '200': { description: OK }
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+    post:
+      summary: Update reservation (change status/comment)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ReservationUpdate' }
+      responses:
+        '200': { description: Updated }
+        '400':
+          description: Cannot update
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+  /businesses/{businessId}/reservations/{reservationId}/send-sms:
+    parameters:
+      - name: businessId
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: reservationId
+        in: path
+        required: true
+        schema:
+          type: string
+    post:
+      summary: Send SMS notification for booking
+      responses:
+        '200': { description: SMS sent }
+        '400':
+          description: Sending failed
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Error' }
+
+components:
+  schemas:
+    Error:
+      type: object
+      properties:
+        error: { type: string, example: ValidationError }
+        message: { type: string }
+        timestamp: { type: string, format: date-time }
+
+    BusinessCreate:
+      type: object
+      required: [name, companyId, type, currencyCode]
+      properties:
+        companyId: { type: string }
+        name: { type: string }
+        type: { type: string }
+        currencyCode: { type: string }
+        address: { type: string }
+        phone: { type: string }
+
+    BusinessUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        type: { type: string }
+        currencyCode: { type: string }
+        address: { type: string }
+        phone: { type: string }
+
+    UserCreate:
+      type: object
+      required: [businessId, name, email, role]
+      properties:
+        businessId: { type: string }
+        name: { type: string }
+        email: { type: string }
+        role:
+          type: string
+          enum: [CLERK, MANAGER, ADMIN]
+        phone: { type: string }
+        passwordHash: { type: string }
+
+    UserUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        email: { type: string }
+        role:
+          type: string
+          enum: [CLERK, MANAGER, ADMIN]
+        phone: { type: string }
+        passwordHash: { type: string }
+
+    MenuCreate:
+      type: object
+      required: [name, businessId, category, unitPrice]
+      properties:
+        businessId: { type: string }
+        taxPolicyId: { type: string }
+        discountPolicyId: { type: string }
+        name: { type: string }
+        category: { type: string }
+        unitPrice: { type: number }
+        isAvailable: { type: boolean }
+
+    MenuUpdate:
+      type: object
+      properties:
+        taxPolicyId: { type: string }
+        discountPolicyId: { type: string }
+        name: { type: string }
+        category: { type: string }
+        unitPrice: { type: number }
+        isAvailable: { type: boolean }
+
+    OrderCreate:
+      type: object
+      required: [businessId, userId, items, type]
+      properties:
+        businessId: { type: string }
+        userId: { type: string }
+        items:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItem' }
+        type:
+          type: string
+          enum: [EAT_IN, TAKE_OUT]
+
+    OrderUpdate:
+      type: object
+      properties:
+        addItems:
+          type: array
+          items: { $ref: '#/components/schemas/OrderItem' }
+        removeOrderItemIds:
+          type: array
+          items: { type: string }
+        changeQuantities:
+          type: array
+          items:
+            type: object
+            properties:
+              orderitemId: { type: string }
+              quantity: { type: integer }
+        status:
+          type: string
+          enum: [OPEN, PAID, REFUNDED, CANCELLED]
+
+    OrderItem:
+      type: object
+      required: [menuId, quantity]
+      properties:
+        menuId: { type: string }
+        menuName: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: number }
+        discountAmount: { type: number }
+        taxTotal: { type: number }
+        menuOptionValues:
+          type: array
+          items: { $ref: '#/components/schemas/MenuOptionValue' }
+
+    PaymentCreate:
+      type: object
+      required: [orderId, amount, method]
+      properties:
+        orderId: { type: string }
+        amount: { type: number }
+        method:
+          type: string
+          enum: [CARD, CASH, GIFT_CARD]
+        transactionId: { type: string }
+
+    ReservationCreate:
+      type: object
+      required: [businessId, name, appointmentTime, numberOfPeople]
+      properties:
+        businessId: { type: string }
+        name: { type: string }
+        phone: { type: string }
+        appointmentTime: { type: string, format: date-time }
+        numberOfPeople: { type: integer }
+        tableNumber: { type: integer }
+        comment: { type: string }
+        status:
+          type: string
+          enum: [BOOKED, COMPLETED, CANCELLED]
+
+    ReservationUpdate:
+      type: object
+      properties:
+        tableNumber: { type: integer }
+        status:
+          type: string
+          enum: [BOOKED, COMPLETED, CANCELLED]
+        comment: { type: string }
+
+    MenuOptionValue:
+      type: object
+      properties:
+        valueId: { type: string }
+        name: { type: string }
+        priceDelta: { type: number }
+        isDefault: { type: boolean }
+
+  securitySchemes:
+    basicAuth:
+      type: http
+      scheme: basic
+
+security:
+  - basicAuth: []
