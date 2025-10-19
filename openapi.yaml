@@ -5,6 +5,83 @@ info:
 servers:
   - url: /api/v1
 paths:
+  /users:
+    get:
+      summary: List all users
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Create a system user (system-level role only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserCreate' }
+      responses:
+        '201': { description: Created }
+
+  /users/{userId}:
+    parameters:
+      - name: userId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Get user info
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Update user (system-level role only)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserUpdate' }
+      responses:
+        '200': { description: Updated }
+
+  /userbusinesses:
+    get:
+      summary: List user-business relations
+      parameters:
+        - name: userId
+          in: query
+          schema: { type: string }
+        - name: businessId
+          in: query
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Assign user to business (with role)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserBusinessCreate' }
+      responses:
+        '201': { description: Created }
+
+  /userbusinesses/{userBusinessId}:
+    parameters:
+      - name: userBusinessId
+        in: path
+        required: true
+        schema: { type: string }
+    get:
+      summary: Get user-business relation detail
+      responses:
+        '200': { description: OK }
+    post:
+      summary: Update user role in business
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UserBusinessUpdate' }
+      responses:
+        '200': { description: Updated }
+
   /businesses:
     get:
       summary: List all businesses
@@ -35,8 +112,7 @@ paths:
       - name: businessId
         in: path
         required: true
-        schema:
-          type: string
+        schema: { type: string }
     get:
       summary: Get business details
       responses:
@@ -54,79 +130,6 @@ paths:
           application/json:
             schema:
               $ref: '#/components/schemas/BusinessUpdate'
-      responses:
-        '200': { description: Updated }
-        '400':
-          description: Bad Request
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Error' }
-        '404':
-          description: Not Found
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Error' }
-
-  /businesses/{businessId}/users:
-    parameters:
-      - name: businessId
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      summary: List users (employees) under business
-      responses:
-        '200': { description: OK }
-        '500':
-          description: Server error
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Error' }
-    post:
-      summary: Create user(employee) in business
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema: { $ref: '#/components/schemas/UserCreate' }
-      responses:
-        '201': { description: Created }
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Error' }
-
-  /businesses/{businessId}/users/{userId}:
-    parameters:
-      - name: businessId
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: userId
-        in: path
-        required: true
-        schema:
-          type: string
-    get:
-      summary: Get user details
-      responses:
-        '200': { description: OK }
-        '404':
-          description: Not found
-          content:
-            application/json:
-              schema: { $ref: '#/components/schemas/Error' }
-    post:
-      summary: Update user(employee) information
-      requestBody:
-        required: true
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/UserUpdate'
       responses:
         '200': { description: Updated }
         '400':
@@ -493,6 +496,46 @@ components:
         message: { type: string }
         timestamp: { type: string, format: date-time }
 
+    UserCreate:
+      type: object
+      required: [name, email, role]
+      properties:
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        passwordHash: { type: string }
+        role:
+          type: string
+          enum: [SYSTEM_ADMIN, SUPERADMIN]
+
+    UserUpdate:
+      type: object
+      properties:
+        name: { type: string }
+        email: { type: string }
+        phone: { type: string }
+        passwordHash: { type: string }
+        role:
+          type: string
+          enum: [SYSTEM_ADMIN, SUPERADMIN]
+
+    UserBusinessCreate:
+      type: object
+      required: [userId, businessId, role]
+      properties:
+        userId: { type: string }
+        businessId: { type: string }
+        role:
+          type: string
+          enum: [CLERK, MANAGER, OWNER]
+
+    UserBusinessUpdate:
+      type: object
+      properties:
+        role:
+          type: string
+          enum: [CLERK, MANAGER, OWNER]
+
     BusinessCreate:
       type: object
       required: [name, companyId, type, currencyCode]
@@ -512,30 +555,6 @@ components:
         currencyCode: { type: string }
         address: { type: string }
         phone: { type: string }
-
-    UserCreate:
-      type: object
-      required: [businessId, name, email, role]
-      properties:
-        businessId: { type: string }
-        name: { type: string }
-        email: { type: string }
-        role:
-          type: string
-          enum: [CLERK, MANAGER, ADMIN]
-        phone: { type: string }
-        passwordHash: { type: string }
-
-    UserUpdate:
-      type: object
-      properties:
-        name: { type: string }
-        email: { type: string }
-        role:
-          type: string
-          enum: [CLERK, MANAGER, ADMIN]
-        phone: { type: string }
-        passwordHash: { type: string }
 
     MenuCreate:
       type: object
